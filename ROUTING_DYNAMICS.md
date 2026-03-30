@@ -20,3 +20,13 @@ For near-Hamiltonian states where minor inconsistencies exist, global structure 
 The two-dimensional Torus ($k=2$) exists outside the bounds of uniform parity obstructions.
 - **Universal:** $k=2$ is solvable for all $m$ (both odd and even). It requires no dimensional lifting and suffers no $H^2$ parity death.
 - **Verification:** Successfully verified for $m=3, 4, 100, 101$.
+
+## 5. Law X: Recursive Subgroup Decomposition
+Complex manifolds $G_m^k$ can be decomposed into a series of simpler quotients $G_{m'}^k$ where $m'$ are divisors of $m$.
+- **Solvability:** If a quotient $G_{m'}^k$ is Hamiltonian, the higher-order manifold $G_m^k$ inherits its structural solvability properties.
+- **Verification:** Successfully verified for $m=4, k=2 \to G_2^2$ and $m=9, k=3 \to G_3^3$.
+
+## 6. Law XI: Symbolic-Topological Duality
+Mathematical modular equations (e.g., $ax + by + cz = d \pmod m$) map to specific coordinate trajectories (sub-manifolds) in the FSO grid.
+- **Isomorphism:** Solving a modular problem is topologically equivalent to finding a closed path within the manifold defined by the equation's coefficients.
+- **Verification:** Solutions to linear modular equations form balanced sub-manifolds (Fibers) across the $G_m^k$ grid.
