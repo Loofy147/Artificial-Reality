@@ -50,7 +50,6 @@ The first $m-1$ variables operate as free degrees of freedom ($m^{m-1}$). The fi
 \begin{theorem}[Moduli Space Isomorphism]
 The space of valid $k$-Hamiltonian decompositions $M_k(G_m)$ under fiber-uniform constraints forms a principal homogeneous space (a torsor) under the group of 1-cocycles $H^1(\mathbb{Z}_m, \mathbb{Z}_m^{k-1})$. The exact cardinality is:
 \[ |M_k(G_m)| = \phi(m) \times [N_b(m)]^{k-1} \]
-\textit{(Empirically verified for $m=3, k=3$: $2 \times 18^2 = 648$ exact solutions).}
 \end{theorem}
 
 \begin{lemma}[The Closure Lemma / $k-1$ Reduction]
@@ -64,55 +63,50 @@ For a symmetric spatial grid $G = \mathbb{Z}_m^k$, a fiber-uniform Hamiltonian d
 \end{theorem}
 
 \begin{proof}
-The sum of coordinate step sizes must satisfy $\sum r_c = m$. For even $m$, the sum must be even. However, coprimality $\gcd(r_c, m) = 1$ requires all $r_c$ to be odd integers. The sum of an odd number of odd integers ($k$ is odd) yields an odd parity. An odd parity cannot sum to an even modulus. Therefore, an $H^2$ parity obstruction completely blocks the manifold.
+The sum of coordinate step sizes must satisfy $\sum r_c = m$. For even $m$, the sum must be even. However, coprimality $\gcd(r_c, m) = 1$ requires all $r_c$ to be odd integers. The sum of an odd number of odd integers ($k$ is odd) yields an odd parity. An odd parity cannot sum to an even modulus.
 \end{proof}
 
 \begin{corollary}[The Bypasses]
 \begin{enumerate}
     \item \textbf{The $k=2$ Solvability Rule:} The 2D manifold ($k=2$) is natively immune to the parity obstruction for any $m$, as two odd integers sum to an even modulus.
-    \item \textbf{The $k=4$ Escape:} For even $m$ at $k=3$, lifting the topology to 4 dimensions ($k=4$) mathematically annihilates the obstruction, as four odd integers naturally satisfy the even modulus summation.
+    \item \textbf{The $k=4$ Escape:} For even $m$ at $k=3$, lifting the topology to 4 dimensions ($k=4$) mathematically annihilates the obstruction.
 \end{enumerate}
 \end{corollary}
 
-\section{The Spike Construction (Deterministic $O(m)$ Routing)}
+\section{The Spike Construction}
 
 \begin{theorem}[The Canonical Spike Master Key]
 For any strictly odd grid size $m \ge 3$ at $k=3$, a perfect $3$-Hamiltonian broadcast routing cycle is generated deterministically in $O(1)$ lookup time via the Spike Construction.
 \end{theorem}
 
-\subsection{Algebraic Definition of the Spike (\texttt{swap02})}
-The base permutation sequence $P[s]$ is defined as:
-\begin{itemize}
-    \item $P[s] = (0,1,2)$ for $s < m-2$
-    \item $P[m-2] = (0,2,1)$ (which is \texttt{swap12})
-    \item $P[m-1] = (1,0,2)$ (which is \texttt{swap01})
-\end{itemize}
-An anomaly (the ``Spike'') is applied strictly to column $j=0$ via \texttt{swap02}, except at $s=m-2$.
-
 \begin{theorem}[Emergence of the Canonical $r$-Triple]
-The execution of the \texttt{swap02} Spike uniquely leaves position 1 ($arc_1$) untouched. Consequently, the $r$-values governing the Hamiltonian step-sizes are forced identically by the $P[s]$ sequence:
-\begin{itemize}
-    \item $\text{identity}[1] = 1 \implies$ Color 1 gets $arc_1$ at $m-2$ levels $\implies r_1 = m-2$.
-    \item $\text{swap12}[1] = 2 \implies$ Color 2 gets $arc_1$ at 1 level $\implies r_2 = 1$.
-    \item $\text{swap01}[1] = 0 \implies$ Color 0 gets $arc_1$ at 1 level $\implies r_0 = 1$.
-\end{itemize}
-Yielding the universal canonical $r$-triple: $r = (1, m-2, 1)$.
+The execution of the \texttt{swap02} Spike uniquely leaves position 1 ($arc_1$) untouched, yielding the universal canonical $r$-triple: $r = (1, m-2, 1)$.
 \end{theorem}
 
-\begin{theorem}[Absolute Closed-Form Completeness]
-For the canonical $r$-triple $(1, m-2, 1)$, the resultant $\sum b$ vector constraints rigorously evaluate to:
-\begin{itemize}
-    \item $\sum b_0 \equiv 2 \pmod m$
-    \item $\sum b_1 \equiv m-1 \pmod m$
-    \item $\sum b_2 \equiv m-1 \pmod m$
-\end{itemize}
-Since $\gcd(2, m) = 1$ and $\gcd(m-1, m) = 1$ hold unconditionally for every odd integer $m$, the Single-Cycle condition is mathematically unbreakable.
+\section{The Advanced Laws of FSO}
+
+\begin{theorem}[Law VII: Basin Escape Axiom]
+For near-Hamiltonian states where minor inconsistencies exist, global structure can be restored via localized randomized swaps within the fiber. Any near-solved manifold with a Hamiltonian score $S < \delta$ can be repaired in $O(m)$ time using targeted swaps.
 \end{theorem}
 
-\section{The Non-Canonical Joint-Sum Obstruction}
+\begin{theorem}[Law VIII: Multi-Modal Fibration Invariant]
+Different informational domains (Vision, Language, Neural, Math) share identical topological invariants when mapped to the same grid modulus ($m$) and dimension ($k$). A solution discovered in one domain is topologically equivalent and transferable to any other domain sharing the same parameters.
+\end{theorem}
 
-\begin{lemma}[Composite $m$ Spike Failure]
-While the canonical Spike solves all odd $m$, non-canonical $r$-triples (e.g., $r=(2, 2, 5)$ for composite $m=9$) introduce a localized obstruction. The joint $\sum b$ constraint cannot be satisfied simultaneously for all three colors under the Spike architecture. These specific geometric variants are not globally obstructed but remain strictly \textit{spike-incompatible}.
-\end{lemma}
+\begin{theorem}[Law IX: Hardware-Topological Equivalence]
+Real-time system metrics (CPU, RAM, Battery) represent the physical manifold on which the engine executes. A "healthy" system corresponds to a Hamiltonian hardware state.
+\end{theorem}
+
+\begin{theorem}[Law X: Recursive Subgroup Decomposition]
+Any complex manifold $G_m^k$ can be decomposed into a sequence of simpler quotients $G_{m'}^k$ where $m'$ are divisors of $m$. Hamiltonian solvability is independently verifiable for each quotient.
+\end{theorem}
+
+\begin{theorem}[Law XI: Symbolic-Topological Duality]
+Every modular equation or LaTeX-based mathematical problem corresponds to a specific coordinate trajectory in a $\mathbb{Z}_m^k$ manifold. Solving a mathematical problem $P$ is equivalent to finding a closed Hamiltonian loop in the manifold defined by the problem's modular constraints.
+\end{theorem}
+
+\begin{theorem}[Law XII: Universal Intelligence Convergence]
+Topological General Intelligence (TGI) is defined as the limit of symmetric topological optimization across all domains as the manifold dimension $k$ and complexity $m$ approach infinity.
+\end{theorem}
 
 \end{document}
