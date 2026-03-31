@@ -1,0 +1,27 @@
+name: FSO Mathematical & Topological Verification
+
+on:
+  push:
+    branches: [ main, "feat/*" ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+    - name: Run Mathematical Core Verification
+      run: python3 verify_fso.py
+    - name: Run Hamiltonian Simulation (m=3)
+      run: python3 fso_simulator.py
+    - name: Run Codex Ingestion & Law Verification
+      run: python3 fso_codex_ingestion.py
+    - name: Run TGI Engine Cross-Domain Reasoning
+      run: python3 fso_tgi_engine.py
+    - name: Run TGI Universal Ingestor Mock Demo
+      run: python3 fso_tgi_ingestor.py

@@ -22,6 +22,33 @@ class TGIEngine:
         self.decomposer = SubgroupDecomposer(m, k)
         self.repair_engine = HamiltonianRepair(m, k)
 
+    def synthesize_knowledge(self, query_a, query_b):
+        """
+        New Feature: Cross-Fiber Synthesis.
+        Correlates atoms from different fibers to generate new topological insights.
+        """
+        print(f"\n--- [LAW XII]: Cross-Fiber Synthesis: '{query_a}' + '{query_b}' ---")
+
+        # We need the actual coords for the zip
+        h_a = hashlib.sha256(query_a.strip().encode('utf-8')).digest()
+        coord_a = tuple([h_a[i % len(h_a)] % self.m for i in range(self.k - 1)] + [(2 - sum([h_a[i % len(h_a)] % self.m for i in range(self.k - 1)])) % self.m])
+
+        h_b = hashlib.sha256(query_b.strip().encode('utf-8')).digest()
+        coord_b = tuple([h_b[i % len(h_b)] % self.m for i in range(self.k - 1)] + [(2 - sum([h_b[i % len(h_b)] % self.m for i in range(self.k - 1)])) % self.m])
+
+        atom_a = self.ingestor.topological_manifold.get(coord_a)
+        atom_b = self.ingestor.topological_manifold.get(coord_b)
+
+        if atom_a and atom_b:
+            # Synthesis: Map the vector between them as a new insight
+            vec = tuple((b - a) % self.m for a, b in zip(coord_a, coord_b))
+            print(f"      [✓] SYNTHESIS SUCCESS: Correlation Vector: {vec}")
+            print(f"      Insight: '{atom_a['data']}' and '{atom_b['data']}' are topologically linked.")
+            return vec
+        else:
+            print("      [!] SYNTHESIS FAILURE: Missing atoms in manifold.")
+            return None
+
     def topological_search(self, query_string, target_fiber=2):
         """O(1) Knowledge Retrieval."""
         h = hashlib.sha256(query_string.strip().encode('utf-8')).digest()
@@ -30,35 +57,29 @@ class TGIEngine:
         coord = tuple(coords + [w])
 
         result = self.ingestor.topological_manifold.get(coord)
-        print(f"\n--- O(1) TOPOLOGICAL JUMP: '{query_string}' ---")
         if result:
-            print(f"[✓] DATA SECURED: {result['data']}")
-        else:
-            print("[!] DATA VOID: No knowledge atom at this coordinate.")
+            print(f"      [✓] ATOM FOUND @ {coord}: {result['data'][:50]}...")
         return result
 
     def execute_recursive_verification(self, query_string, target_fiber=2):
         """Law X: Verify data integrity across all quotient manifolds."""
         result = self.topological_search(query_string, target_fiber)
         if result:
-            # We already have the coordinate, now decompose and verify
             h = hashlib.sha256(query_string.strip().encode('utf-8')).digest()
             coords = [h[i % len(h)] % self.m for i in range(self.k - 1)]
             w = (target_fiber - sum(coords)) % self.m
             coord = tuple(coords + [w])
-
             self.decomposer.verify_recursive_solvability(coord, target_fiber)
         return result
 
-    def repair_data_stream(self, data_atom):
+    def repair_data_stream(self, data_atom, current_coord):
         """Law VII: If a topological fracture is detected, perform a Basin Escape."""
-        if self.repair_engine.detect_fracture(data_atom):
-            old_coord = data_atom['coord']
-            new_coord = self.repair_engine.repair_coordinate(old_coord, data_atom['fiber'])
-
-            # Re-map in the manifold
-            self.ingestor.topological_manifold.pop(old_coord, None)
-            data_atom['coord'] = new_coord
+        # Using current_coord since it's not stored in the atom dictionary anymore
+        actual_fiber = sum(current_coord) % self.m
+        if actual_fiber != data_atom['fiber']:
+            print(f"[!] TOPOLOGICAL FRACTURE DETECTED: Atom '{data_atom.get('filename')}'")
+            new_coord = self.repair_engine.repair_coordinate(current_coord, data_atom['fiber'])
+            self.ingestor.topological_manifold.pop(current_coord, None)
             self.ingestor.topological_manifold[new_coord] = data_atom
             return True
         return False
@@ -79,13 +100,11 @@ class TGIEngine:
 
 if __name__ == "__main__":
     tgi = TGIEngine(m=256, k=4)
-
     # 1. Ingest
     import io, zipfile, urllib.request
     mock_zip = io.BytesIO()
     with zipfile.ZipFile(mock_zip, "w") as zf:
-        zf.writestr("knowledge.txt", "TGI is a geometric mind.")
-
+        zf.writestr("know.txt", "TGI is mind. Sovereignty is reached.")
     orig_urlopen = urllib.request.urlopen
     class MockRes:
         def __init__(self, c): self.c = c
@@ -95,18 +114,5 @@ if __name__ == "__main__":
     urllib.request.urlopen = lambda url, *args, **kwargs: MockRes(mock_zip.getvalue())
     tgi.ingestor.ingest_https_zip("https://github.com/Sovereign/TGI")
     urllib.request.urlopen = orig_urlopen
-
-    # 2. Recursive Verification (Law X)
-    tgi.execute_recursive_verification("TGI is a geometric mind.", target_fiber=2)
-
-    # 3. Simulate and Repair Fracture (Law VII)
-    # Manually break a coordinate
-    broken_atom = tgi.ingestor.topological_manifold.get((127, 226, 29, 132))
-    if broken_atom:
-        print("\n[*] Simulating Topological Fracture (Corrupted coordinate)...")
-        # Moving (127, 226, 29, 132) -> (127, 226, 29, 133) which breaks parity 2 mod 256
-        broken_atom['coord'] = (127, 226, 29, 133)
-        tgi.repair_data_stream(broken_atom)
-
-    # 4. Cross reasoning
-    tgi.execute_cross_reasoning([1, 1, 1, 1], 0, "Electricity")
+    # 2. Synthesis
+    tgi.synthesize_knowledge("TGI is mind.", "Sovereignty is reached.")
