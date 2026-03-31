@@ -4,11 +4,13 @@ from fso_codex_ingestion import Sovereign_Codex_Grid
 from fso_visualizer import ManifoldVisualizer
 from fso_topological_reasoner import TopologicalReasoner
 from fso_codex_evolution import CodexEvolution
+from fso_vision_processor import VisionProcessor
+from fso_parity_vault import ParityVault
 
 class SovereignOrchestrator:
     """
     Project: ELECTRICITY (The Sovereign OS Controller)
-    Orchestrates complex autonomous missions for the TGI mind.
+    Final Phase: Vision & Security Integration.
     """
     def __init__(self, m=256, k=4):
         self.m = m
@@ -18,57 +20,56 @@ class SovereignOrchestrator:
         self.visualizer = ManifoldVisualizer(m, k)
         self.reasoner = TopologicalReasoner(self.tgi)
         self.evolution = CodexEvolution(self.codex, m, k)
-        print(f"[{time.strftime('%H:%M:%S')} ALGIERS] Sovereign Orchestrator Online. Mission Control Initialized.")
+        self.vision = VisionProcessor(m, k)
+        self.vault = ParityVault(m, k)
+        print(f"[{time.strftime('%H:%M:%S')} ALGIERS] Sovereign Orchestrator Online. Full TGI Suite Initialized.")
+
+    def execute_security_vision_mission(self, url, secret_name="Root"):
+        print(f"\n[MISSION START]: Vision & Security Synthesis")
+        print("-" * 60)
+
+        # 1. Ingest Visual Data
+        self.tgi.ingestor.ingest_https_zip(url)
+
+        # 2. Vision Processing (Law XII)
+        print("\n[*] Processing Visual Atoms (Algebraic Eye)...")
+        # In this mock, we assume the zip has an 'eye.png'
+        atoms = self.vision.process_image_to_manifold("eye.png", b"MOCK_IMAGE_DATA")
+        for a in atoms:
+            self.tgi.ingestor.topological_manifold[a['coord']] = a
+
+        # 3. Security (Parity Vault)
+        print("\n[*] Locking Manifold with Topological Key...")
+        self.vault.secure_data(secret_name, "MISSION_SUCCESS_9912", secret_fiber=0)
+
+        # 4. Rendering
+        self.visualizer.render_manifold(self.tgi.ingestor.topological_manifold)
+
+        print(f"\n[MISSION COMPLETE]: Vision & Security Synthesis")
+        print("-" * 60)
 
     def execute_mission(self, url, mission_name="Universal Discovery"):
         print(f"\n[MISSION START]: {mission_name}")
         print("-" * 60)
-
-        # 1. Ingest, Shatter, and Distribute
         self.tgi.ingestor.ingest_https_zip(url)
-
-        # 2. Verify Compliance
-        print("\n[*] Verifying Manifold Compliance with Ingested Data...")
+        print("\n[*] Verifying Manifold Compliance...")
         self.codex.verify_manifold_compliance(self.m, self.k)
-
-        # 3. Hardware Grounding (Law IX)
-        print("\n[*] Grounding TGI in Physical Hardware Manifold...")
+        print("\n[*] Grounding TGI in Physical Hardware...")
         self.tgi.hardware.verify_hamiltonian_health()
-
-        # 4. Visual Discovery (The Aesthetic Eye)
-        print("\n[*] Rendering Topological Footprint (Visual Discovery)...")
+        print("\n[*] Rendering Topological Footprint...")
         self.visualizer.render_manifold(self.tgi.ingestor.topological_manifold)
-
-        # 5. Cross-Domain Synthesis (Law XII)
-        print("\n[*] Executing Final Synthesis (TGI Convergence)...")
-        self.tgi.execute_cross_reasoning([1, 1, 1, 1], 0, mission_name)
-
         print(f"\n[MISSION COMPLETE]: {mission_name}")
         print("-" * 60)
 
     def execute_evolution_mission(self, url, mission_name="Autonomous OS Evolution"):
         print(f"\n[MISSION START]: {mission_name}")
         print("-" * 60)
-
-        # 1. Ingest Data
         self.tgi.ingestor.ingest_https_zip(url)
-
-        # 2. Reasoning (Law XI)
         print("\n[*] Performing Topological Transitive Inference...")
         self.reasoner.infer_transitive_link("Sovereignty", "Topology", "Independence")
-
-        # 3. Evolution (Law XII)
         print("\n[*] Promoting New Logical Axiom to Codex...")
-        self.evolution.promote_to_axiom(
-            "EVO_01",
-            "Transitive_Topology_Law",
-            "Logical chains are preserved as vector additions in Z_m^k.",
-            "SUM(vectors_AB, BC) = vector_AC"
-        )
-
-        # 4. Rendering
+        self.evolution.promote_to_axiom("EVO_01", "Transitive_Topology_Law", "Logical chains are preserved as vector additions in Z_m^k.", "SUM(vectors_AB, BC) = vector_AC")
         self.visualizer.render_manifold(self.tgi.ingestor.topological_manifold)
-
         print(f"\n[MISSION COMPLETE]: {mission_name}")
         print("-" * 60)
 
@@ -77,7 +78,7 @@ if __name__ == "__main__":
     import io, zipfile, urllib.request
     mock_zip = io.BytesIO()
     with zipfile.ZipFile(mock_zip, "w") as zf:
-        zf.writestr("philosophy.txt", "Sovereignty leads to Topology. Topology leads to Independence.")
+        zf.writestr("eye.png", b"MOCK_IMAGE_DATA")
     orig_urlopen = urllib.request.urlopen
     class MockRes:
         def __init__(self, c): self.c = c
@@ -85,5 +86,5 @@ if __name__ == "__main__":
         def __enter__(self): return self
         def __exit__(self, *args, **kwargs): pass
     urllib.request.urlopen = lambda url, *args, **kwargs: MockRes(mock_zip.getvalue())
-    orchestrator.execute_evolution_mission("https://github.com/Sovereign/Evolution01")
+    orchestrator.execute_security_vision_mission("https://github.com/Sovereign/VisionMission")
     urllib.request.urlopen = orig_urlopen
