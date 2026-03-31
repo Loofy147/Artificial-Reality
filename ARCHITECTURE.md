@@ -1,53 +1,84 @@
-# Architecture of the FSO System
+# FSO Architecture Documentation
 
-The Functional System Overview (FSO) is designed to provide a comprehensive look at the architecture and flow of the system. Below are diagrams and explanations that detail how different components interact with one another.
+## Overview
+This document outlines the architecture of the FSO (Future State Orchestrator) system, which is comprised of several components that work together to execute complex missions seamlessly.
 
-## System Architecture Diagram
+### Components
 
-```
-      +------------------+
-      |    User Input    | 
-      +--------+---------+
-               |  
-               v  
-      +------------------+
-      |      API         | 
-      +--------+---------+
-               |  
-               v  
-      +------------------+
-      |  Business Logic   | 
-      +--------+---------+
-               |  
-               v  
-      +------------------+
-      |     Database      | 
-      +------------------+
-```  
+1. **Sovereign Orchestrator**  
+   The main control unit of the FSO architecture, responsible for high-level decision making and orchestration of various subsystems.
 
-## Flow Chart for User Interaction
+2. **TGI Engine**  
+   The core processing engine that handles task generation and management, ensuring optimal resource allocation.
 
+3. **Codex Grid**  
+   A distributed knowledge base that stores and retrieves relevant information needed for mission execution.
+
+4. **Vision Processor**  
+   Component dedicated to analyzing visual inputs from various sensors, using advanced algorithms for object recognition and environment mapping.
+
+5. **Parity Vault**  
+   A secure storage system that holds critical data and state information, ensuring data integrity and security throughout operations.
+
+6. **Topological Reasoner**  
+   This component allows the system to make logical inferences about the relationships and configurations of entities within the operational environment.
+
+### Mission Execution Flows
+The mission execution is divided into several flows to manage the complexity effectively. Below are the flows visualized with ASCII diagrams and mermaid flowcharts.
+
+#### Flow 1: Task Initiation
 ```mermaid
 flowchart TD
-    A[User] --> B[API Request]
-    B --> C{Logic}
-    C -->|Data needed| D[Fetch Data]
-    C -->|No Data| E[Create Data]
-    D --> F[Response to User]
-    E --> F
-```  
+    A[Start] --> B[Receive Mission]
+    B --> C[Analyze Requirements]
+    C --> D[Allocate Resources]
+    D --> E[Initialize Tasks]
+    E --> F[End]
+```
 
-## Explanation
+##### ASCII Diagram:
+```
+   +-------+    +------------------+    +------------------+
+   | Start | -> | Receive Mission   | -> | Analyze Requirements |
+   +-------+    +------------------+    +------------------+
+                          |                           |
+                          v                           v
+                    +------------------+    +------------------+
+                    | Allocate Resources | -> | Initialize Tasks   |
+                    +------------------+    +------------------+
+                          |                           |
+                          v                           v
+                       +-------+                    +-------+
+                       | End   | <----------------- | End   |
+                       +-------+                    +-------+
+```
 
-### System Architecture Diagram:
-- **User Input:** This is where the interaction starts, capturing user input for processing.
-- **API:** The API acts as the gateway for users, allowing access to the business logic and database.
-- **Business Logic:** This layer contains the core functionalities and decision-making processes of the system.
-- **Database:** This is where all the data is stored, retrieved, and managed.
+#### Flow 2: Execution Monitoring
+```mermaid
+flowchart TD
+    A[Start] --> B[Monitoring Tasks]
+    B --> C{Are all tasks complete?}
+    C -- Yes --> D[Compile Results]
+    C -- No --> B
+    D --> E[End]
+```
 
-### Flow Chart for User Interaction:
-- **User:** This block represents the user initiating the request.
-- **API Request:** The user's request is sent to the API.
-- **Logic:** The system evaluates what kind of response is needed based on user input.
-- **Fetch Data/Create Data:** Logic determines whether to fetch existing data or create new data based on the API request.
-- **Response to User:** The final output is sent back to the user in a structured format.
+##### ASCII Diagram:
+```
+   +-------+    +-----------------+  +--------------------+
+   | Start | -> | Monitoring Tasks | --> |   Are all tasks complete?   |
+   +-------+    +-----------------+  +--------------------+
+                   | No  | Yes
+                   v      v
+             +-----------------+     +------------------+
+             | Monitor Next Task |--->| Compile Results    |
+             +-----------------+     +------------------+
+                                              |      
+                                              v      
+                                          +-------+  
+                                          | End   |  
+                                          +-------+  
+```
+
+### Conclusion
+The FSO architecture is designed to ensure robust, secure, and efficient execution of diverse and complex missions. Each component plays a vital role in overall functionality, and the interaction between them allows for high levels of adaptability and responsiveness to changing operational requirements.
