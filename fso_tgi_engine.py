@@ -2,6 +2,8 @@ from fso_domain_transfer import MultiModalFibrator
 from fso_hardware_monitor import HardwareTopologicalMonitor
 from fso_math_engine import SymbolicPathMapper
 from fso_tgi_ingestor import TGI_Universal_Ingestor
+from fso_subgroup_decomposer import SubgroupDecomposer
+from fso_hamiltonian_repair import HamiltonianRepair
 import hashlib
 
 class TGIEngine:
@@ -17,72 +19,72 @@ class TGIEngine:
         self.hardware = HardwareTopologicalMonitor(m, k)
         self.math = SymbolicPathMapper(m, k)
         self.ingestor = TGI_Universal_Ingestor(m, k)
+        self.decomposer = SubgroupDecomposer(m, k)
+        self.repair_engine = HamiltonianRepair(m, k)
 
     def topological_search(self, query_string, target_fiber=2):
-        """
-        O(1) Knowledge Retrieval: Jump directly to the coordinate that would contain
-        this information atom if it existed in our manifold.
-        """
-        # Hash the query to find the coordinate
+        """O(1) Knowledge Retrieval."""
         h = hashlib.sha256(query_string.strip().encode('utf-8')).digest()
-        coords = []
-        for i in range(self.k - 1):
-            coords.append(h[i % len(h)] % self.m)
-
-        # Closure Lemma ensures fiber alignment
+        coords = [h[i % len(h)] % self.m for i in range(self.k - 1)]
         w = (target_fiber - sum(coords)) % self.m
-        coords.append(w)
-        coord = tuple(coords)
+        coord = tuple(coords + [w])
 
-        # Direct coordinate jump (O(1))
         result = self.ingestor.topological_manifold.get(coord)
-
         print(f"\n--- O(1) TOPOLOGICAL JUMP: '{query_string}' ---")
-        print(f"Target Coordinate: {coord}")
-
         if result:
             print(f"[✓] DATA SECURED: {result['data']}")
-            print(f"    Source: '{result['filename']}' ({result['type']})")
         else:
             print("[!] DATA VOID: No knowledge atom at this coordinate.")
         return result
+
+    def execute_recursive_verification(self, query_string, target_fiber=2):
+        """Law X: Verify data integrity across all quotient manifolds."""
+        result = self.topological_search(query_string, target_fiber)
+        if result:
+            # We already have the coordinate, now decompose and verify
+            h = hashlib.sha256(query_string.strip().encode('utf-8')).digest()
+            coords = [h[i % len(h)] % self.m for i in range(self.k - 1)]
+            w = (target_fiber - sum(coords)) % self.m
+            coord = tuple(coords + [w])
+
+            self.decomposer.verify_recursive_solvability(coord, target_fiber)
+        return result
+
+    def repair_data_stream(self, data_atom):
+        """Law VII: If a topological fracture is detected, perform a Basin Escape."""
+        if self.repair_engine.detect_fracture(data_atom):
+            old_coord = data_atom['coord']
+            new_coord = self.repair_engine.repair_coordinate(old_coord, data_atom['fiber'])
+
+            # Re-map in the manifold
+            self.ingestor.topological_manifold.pop(old_coord, None)
+            data_atom['coord'] = new_coord
+            self.ingestor.topological_manifold[new_coord] = data_atom
+            return True
+        return False
 
     def execute_cross_reasoning(self, problem_coeffs, target, domain_data):
         print(f"\n=========================================================")
         print(f" TGI ENGINE: CROSS-DOMAIN TOPOLOGICAL REASONING")
         print(f"=========================================================")
-
-        # 1. Math Domain Analysis
         math_nodes = self.math.map_equation_to_path(problem_coeffs, target)
-
-        # 2. Informational Domain Mapping
         data_coord = self.fibrator.map_to_manifold(domain_data)
-        print(f"\nInformational Anchor ('{domain_data}'): {data_coord}")
-
-        # 3. Cross-Check
         check_sum = sum(c * x for c, x in zip(problem_coeffs, data_coord)) % self.m
         is_aligned = (check_sum == target)
-        print(f"\nTopological Alignment Test: {check_sum} == {target} ? {is_aligned}")
-
-        # 4. Hardware Grounding
+        print(f"Topological Alignment Test: {check_sum} == {target} ? {is_aligned}")
         self.hardware.verify_hamiltonian_health()
-
-        if is_aligned:
-            print("\n[✓] TGI CONVERGENCE REACHED: Logical and physical fibers are phase-locked.")
-        else:
-            print("\n[!] TGI DIVERGENCE: Seeking Hamiltonian repair via Law VII...")
-
+        if is_aligned: print("\n[✓] TGI CONVERGENCE REACHED.")
+        else: print("\n[!] TGI DIVERGENCE.")
         print("=========================================================\n")
 
 if __name__ == "__main__":
     tgi = TGIEngine(m=256, k=4)
 
-    # 1. Simulate omnivorous ingestion (knowledge.txt)
+    # 1. Ingest
     import io, zipfile, urllib.request
     mock_zip = io.BytesIO()
     with zipfile.ZipFile(mock_zip, "w") as zf:
-        # NOTE: Ensure no extra whitespace if searching exactly
-        zf.writestr("knowledge.txt", "TGI is a geometric mind. Sovereignty is reached through topology.")
+        zf.writestr("knowledge.txt", "TGI is a geometric mind.")
 
     orig_urlopen = urllib.request.urlopen
     class MockRes:
@@ -91,14 +93,20 @@ if __name__ == "__main__":
         def __enter__(self): return self
         def __exit__(self, *args, **kwargs): pass
     urllib.request.urlopen = lambda url, *args, **kwargs: MockRes(mock_zip.getvalue())
-
     tgi.ingestor.ingest_https_zip("https://github.com/Sovereign/TGI")
     urllib.request.urlopen = orig_urlopen
 
-    # 2. Perform O(1) jump for specific knowledge
-    # The shatterer splits by ". " so the second sentence is "Sovereignty is reached through topology."
-    tgi.topological_search("TGI is a geometric mind.", target_fiber=2)
-    tgi.topological_search("Sovereignty is reached through topology.", target_fiber=2)
+    # 2. Recursive Verification (Law X)
+    tgi.execute_recursive_verification("TGI is a geometric mind.", target_fiber=2)
 
-    # 3. Cross reasoning
+    # 3. Simulate and Repair Fracture (Law VII)
+    # Manually break a coordinate
+    broken_atom = tgi.ingestor.topological_manifold.get((127, 226, 29, 132))
+    if broken_atom:
+        print("\n[*] Simulating Topological Fracture (Corrupted coordinate)...")
+        # Moving (127, 226, 29, 132) -> (127, 226, 29, 133) which breaks parity 2 mod 256
+        broken_atom['coord'] = (127, 226, 29, 133)
+        tgi.repair_data_stream(broken_atom)
+
+    # 4. Cross reasoning
     tgi.execute_cross_reasoning([1, 1, 1, 1], 0, "Electricity")
