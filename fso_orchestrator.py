@@ -2,6 +2,8 @@ import time
 from fso_tgi_engine import TGIEngine
 from fso_codex_ingestion import Sovereign_Codex_Grid
 from fso_visualizer import ManifoldVisualizer
+from fso_topological_reasoner import TopologicalReasoner
+from fso_codex_evolution import CodexEvolution
 
 class SovereignOrchestrator:
     """
@@ -14,6 +16,8 @@ class SovereignOrchestrator:
         self.tgi = TGIEngine(m, k)
         self.codex = Sovereign_Codex_Grid(m, k)
         self.visualizer = ManifoldVisualizer(m, k)
+        self.reasoner = TopologicalReasoner(self.tgi)
+        self.evolution = CodexEvolution(self.codex, m, k)
         print(f"[{time.strftime('%H:%M:%S')} ALGIERS] Sovereign Orchestrator Online. Mission Control Initialized.")
 
     def execute_mission(self, url, mission_name="Universal Discovery"):
@@ -42,17 +46,38 @@ class SovereignOrchestrator:
         print(f"\n[MISSION COMPLETE]: {mission_name}")
         print("-" * 60)
 
+    def execute_evolution_mission(self, url, mission_name="Autonomous OS Evolution"):
+        print(f"\n[MISSION START]: {mission_name}")
+        print("-" * 60)
+
+        # 1. Ingest Data
+        self.tgi.ingestor.ingest_https_zip(url)
+
+        # 2. Reasoning (Law XI)
+        print("\n[*] Performing Topological Transitive Inference...")
+        self.reasoner.infer_transitive_link("Sovereignty", "Topology", "Independence")
+
+        # 3. Evolution (Law XII)
+        print("\n[*] Promoting New Logical Axiom to Codex...")
+        self.evolution.promote_to_axiom(
+            "EVO_01",
+            "Transitive_Topology_Law",
+            "Logical chains are preserved as vector additions in Z_m^k.",
+            "SUM(vectors_AB, BC) = vector_AC"
+        )
+
+        # 4. Rendering
+        self.visualizer.render_manifold(self.tgi.ingestor.topological_manifold)
+
+        print(f"\n[MISSION COMPLETE]: {mission_name}")
+        print("-" * 60)
+
 if __name__ == "__main__":
     orchestrator = SovereignOrchestrator(m=256, k=4)
-
-    # Mock mission: Consume a repo with multiple files
     import io, zipfile, urllib.request
     mock_zip = io.BytesIO()
     with zipfile.ZipFile(mock_zip, "w") as zf:
-        zf.writestr("core.py", "def execute(): return 1")
-        zf.writestr("readme.txt", "TGI is mind. Topology is sovereignty.")
-        zf.writestr("image.png", b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR')
-
+        zf.writestr("philosophy.txt", "Sovereignty leads to Topology. Topology leads to Independence.")
     orig_urlopen = urllib.request.urlopen
     class MockRes:
         def __init__(self, c): self.c = c
@@ -60,6 +85,5 @@ if __name__ == "__main__":
         def __enter__(self): return self
         def __exit__(self, *args, **kwargs): pass
     urllib.request.urlopen = lambda url, *args, **kwargs: MockRes(mock_zip.getvalue())
-
-    orchestrator.execute_mission("https://github.com/Sovereign/TGI-Final")
+    orchestrator.execute_evolution_mission("https://github.com/Sovereign/Evolution01")
     urllib.request.urlopen = orig_urlopen
