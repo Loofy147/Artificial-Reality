@@ -1,5 +1,6 @@
 import collections
 import random
+import itertools
 
 class FSORouter:
     def __init__(self, m, k=3, r=None):
@@ -12,6 +13,9 @@ class FSORouter:
             if m == 3: self.r = [1, 1, 1]
         elif k == 2:
             self.r = [1, m - 1]
+        elif k == 4:
+            # Law I Escape: k=4 resolves even-grid parity obstructions
+            self.r = [1] * 4
         else:
             self.r = [1] * k
 
@@ -21,6 +25,13 @@ class FSORouter:
                 if s < m - 2: p = [0, 1, 2]
                 elif s == m - 2: p = [0, 2, 1]
                 else: p = [1, 0, 2]
+            elif k == 2:
+                if s == 0: p = [0, 1]
+                else: p = [1, 0]
+            elif k == 4:
+                # Balanced distribution for k=4
+                p = [0, 1, 2, 3]
+                if s % 2 == 1: p = [2, 3, 0, 1]
             else:
                 p = list(range(k))
             self.perms[s] = p
@@ -81,59 +92,35 @@ def verify_fso_routing(m, k=3, router=None, silent=False):
     return final_success
 
 def repair_manifold(m, k, max_iterations=2000):
-    # Law VII: Basin Escape Axiom (Refined for O(m) targeted swaps)
     router = FSORouter(m, k)
     if verify_fso_routing(m, k, router, silent=True):
         return router
 
     for attempt in range(max_iterations):
-        # Identify a broken path
         color = random.randint(0, k - 1)
         nodes, edges, final_node = router.trace_cycle(color)
-
         if len(nodes) < m**k:
-            # TARGETED SWAP: Link the sub-cycle at its tail
-            # Find a node *not* in the current cycle
-            unvisited = set(tuple(random.randint(0, m-1) for _ in range(k)) for _ in range(m))
-            potential_entry = random.choice(list(unvisited))
-
-            # Pick a node in the cycle and force it to divert to the entry node
-            # This is "targeted" because we pick a known point of failure (the loop closure)
             tail = nodes[-1]
             s = sum(tail) % m
             p = list(router.get_permutation(tail))
-
-            # Change the dimension chosen by this color at the tail
-            dim_to_change = p.index(p[color % k])
-            new_dim = (dim_to_change + 1) % k
-            p[dim_to_change], p[new_dim] = p[new_dim], p[dim_to_change]
-
+            i, j = random.sample(range(k), 2)
+            p[i], p[j] = p[j], p[i]
             router.anomalies[(tail, s)] = p
 
         if verify_fso_routing(m, k, router, silent=True):
-            print(f"Refined Repair successful at attempt {attempt}!")
+            print(f"Repair successful for G_{m}^{k} at attempt {attempt}!")
+            verify_fso_routing(m, k, router)
             return router
+
+    print(f"Repair failed for G_{m}^{k}.")
     return None
 
-def recursive_subgroup_decomposition(m, k):
-    print(f"\n--- Law X: Decomposing G_{m}^{k} ---")
-    divisors = [i for i in range(2, m) if m % i == 0]
-    if not divisors:
-        print(f"m={m} is prime. Solvability is atomic.")
-        return True
-
-    success = True
-    for d in divisors:
-        print(f"Testing Quotient G_{d}^{k}...")
-        router = repair_manifold(d, k, max_iterations=1000)
-        if not router:
-            print(f"Warning: Quotient G_{d}^{k} is NOT Hamiltonian.")
-            success = False
-        else:
-            print(f"[✓] Quotient G_{d}^{k} is Hamiltonian.")
-    return success
-
 if __name__ == "__main__":
+    print("\n--- Standard Verifications ---")
     verify_fso_routing(3, 3)
-    recursive_subgroup_decomposition(4, 2)
-    recursive_subgroup_decomposition(9, 3)
+
+    print("\n--- Law I Escape: Testing k=4 for even grids ---")
+    # m=2, k=3 is obstructed
+    verify_fso_routing(2, 3)
+    # m=2, k=4
+    repair_manifold(2, 4)
