@@ -22,32 +22,37 @@ class TGIEngine:
         self.decomposer = SubgroupDecomposer(m, k)
         self.repair_engine = HamiltonianRepair(m, k)
 
-    def synthesize_knowledge(self, query_a, query_b):
+    def synthesize_knowledge_between_fibers(self, query_a, fiber_a, query_b, fiber_b):
         """
-        New Feature: Cross-Fiber Synthesis.
-        Correlates atoms from different fibers to generate new topological insights.
+        Law XII: Cross-Fiber Synthesis.
+        Correlates atoms from any two fibers to generate new topological insights.
         """
-        print(f"\n--- [LAW XII]: Cross-Fiber Synthesis: '{query_a}' + '{query_b}' ---")
+        print(f"\n--- [LAW XII]: Cross-Fiber Synthesis: Fiber {fiber_a} <-> Fiber {fiber_b} ---")
 
-        # We need the actual coords for the zip
         h_a = hashlib.sha256(query_a.strip().encode('utf-8')).digest()
-        coord_a = tuple([h_a[i % len(h_a)] % self.m for i in range(self.k - 1)] + [(2 - sum([h_a[i % len(h_a)] % self.m for i in range(self.k - 1)])) % self.m])
+        coord_a = tuple([h_a[i % len(h_a)] % self.m for i in range(self.k - 1)] + [(fiber_a - sum([h_a[i % len(h_a)] % self.m for i in range(self.k - 1)])) % self.m])
 
         h_b = hashlib.sha256(query_b.strip().encode('utf-8')).digest()
-        coord_b = tuple([h_b[i % len(h_b)] % self.m for i in range(self.k - 1)] + [(2 - sum([h_b[i % len(h_b)] % self.m for i in range(self.k - 1)])) % self.m])
+        coord_b = tuple([h_b[i % len(h_b)] % self.m for i in range(self.k - 1)] + [(fiber_b - sum([h_b[i % len(h_b)] % self.m for i in range(self.k - 1)])) % self.m])
 
         atom_a = self.ingestor.topological_manifold.get(coord_a)
         atom_b = self.ingestor.topological_manifold.get(coord_b)
 
         if atom_a and atom_b:
-            # Synthesis: Map the vector between them as a new insight
             vec = tuple((b - a) % self.m for a, b in zip(coord_a, coord_b))
             print(f"      [✓] SYNTHESIS SUCCESS: Correlation Vector: {vec}")
-            print(f"      Insight: '{atom_a['data']}' and '{atom_b['data']}' are topologically linked.")
+            print(f"      Atom A ({atom_a['type']}): '{atom_a['data'][:50]}...'")
+            print(f"      Atom B ({atom_b['type']}): '{atom_b['data'][:50]}...'")
+            print(f"      Insight: Topological link secured between {atom_a['filename']} and {atom_b['filename']}.")
             return vec
         else:
-            print("      [!] SYNTHESIS FAILURE: Missing atoms in manifold.")
+            if not atom_a: print(f"      [!] Missing Atom A @ {coord_a}")
+            if not atom_b: print(f"      [!] Missing Atom B @ {coord_b}")
             return None
+
+    def synthesize_knowledge(self, query_a, query_b):
+        """Standard synthesis on Fiber 2 (Knowledge)."""
+        return self.synthesize_knowledge_between_fibers(query_a, 2, query_b, 2)
 
     def topological_search(self, query_string, target_fiber=2):
         """O(1) Knowledge Retrieval."""
@@ -74,7 +79,6 @@ class TGIEngine:
 
     def repair_data_stream(self, data_atom, current_coord):
         """Law VII: If a topological fracture is detected, perform a Basin Escape."""
-        # Using current_coord since it's not stored in the atom dictionary anymore
         actual_fiber = sum(current_coord) % self.m
         if actual_fiber != data_atom['fiber']:
             print(f"[!] TOPOLOGICAL FRACTURE DETECTED: Atom '{data_atom.get('filename')}'")
@@ -100,7 +104,6 @@ class TGIEngine:
 
 if __name__ == "__main__":
     tgi = TGIEngine(m=256, k=4)
-    # 1. Ingest
     import io, zipfile, urllib.request
     mock_zip = io.BytesIO()
     with zipfile.ZipFile(mock_zip, "w") as zf:
@@ -114,5 +117,4 @@ if __name__ == "__main__":
     urllib.request.urlopen = lambda url, *args, **kwargs: MockRes(mock_zip.getvalue())
     tgi.ingestor.ingest_https_zip("https://github.com/Sovereign/TGI")
     urllib.request.urlopen = orig_urlopen
-    # 2. Synthesis
     tgi.synthesize_knowledge("TGI is mind.", "Sovereignty is reached.")
