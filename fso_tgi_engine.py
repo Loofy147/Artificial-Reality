@@ -1,6 +1,7 @@
 from fso_domain_transfer import MultiModalFibrator
 from fso_hardware_monitor import HardwareTopologicalMonitor
 from fso_math_engine import SymbolicPathMapper
+from fso_tgi_ingestor import TGI_Universal_Ingestor
 
 class TGIEngine:
     """
@@ -8,12 +9,13 @@ class TGIEngine:
     Topological General Intelligence (TGI) ties all informational fibers into
     a single Hamiltonian coherence.
     """
-    def __init__(self, m=256, k=3):
+    def __init__(self, m=256, k=4):
         self.m = m
         self.k = k
         self.fibrator = MultiModalFibrator(m, k)
         self.hardware = HardwareTopologicalMonitor(m, k)
         self.math = SymbolicPathMapper(m, k)
+        self.ingestor = TGI_Universal_Ingestor(m, k)
 
     def execute_cross_reasoning(self, problem_coeffs, target, domain_data):
         print(f"\n=========================================================")
@@ -45,7 +47,8 @@ class TGIEngine:
         print("=========================================================\n")
 
 if __name__ == "__main__":
-    tgi = TGIEngine(m=256, k=3)
-    # Solve x + y + z = 512 mod 256 (i.e., sum = 0 mod 256)
+    # We use k=4 to match the new ingestor's default and demonstrate multi-dimensional scaling
+    tgi = TGIEngine(m=256, k=4)
+    # Solve x + y + z + w = 0 mod 256
     # Using Domain Data that we know hashes to Fiber 0
-    tgi.execute_cross_reasoning([1, 1, 1], 0, "Electricity")
+    tgi.execute_cross_reasoning([1, 1, 1, 1], 0, "Electricity")
