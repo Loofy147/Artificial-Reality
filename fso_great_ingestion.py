@@ -6,6 +6,7 @@ class GreatIngestor:
     Project: ELECTRICITY (The Great Ingestion)
     Consumes the most valuable domains of human knowledge:
     Mathematics, Computer Science, Computer Vision, and Advanced System Specs.
+    Enhanced with Kaggle Machine Intelligence.
     """
     def __init__(self, m=256, k=4):
         self.orchestrator = SovereignOrchestrator(m, k)
@@ -25,6 +26,10 @@ class GreatIngestor:
             "Topological_OS_Specs": [
                 "https://github.com/Sovereign/ProjectElectricity/Architecture",
                 "https://github.com/Sovereign/TGI-Specifications"
+            ],
+            "Machine_Intelligence": [
+                {"type": "kaggle_dataset", "slug": "abdullah1133/arc-prize-2024"},
+                {"type": "kaggle_competition", "slug": "arc-prize-2024"}
             ]
         }
 
@@ -36,10 +41,14 @@ class GreatIngestor:
         start_time = time.time()
         total_domains = 0
 
-        for category, urls in self.registry.items():
+        for category, sources in self.registry.items():
             print(f"\n>>> CATEGORY: {category.upper()}")
-            for url in urls:
-                self.orchestrator.execute_mission(url, mission_name=f"Ingesting {category}: {url.split('/')[-1]}")
+            for source in sources:
+                if isinstance(source, str):
+                    self.orchestrator.execute_mission(source, mission_name=f"Ingesting {category}: {source.split('/')[-1]}")
+                elif isinstance(source, dict):
+                    m_type = source['type'].split('_')[1] # 'dataset' or 'competition'
+                    self.orchestrator.execute_kaggle_mission(source['slug'], mission_type=m_type, mission_name=f"Ingesting Kaggle {category}: {source['slug']}")
                 total_domains += 1
 
         duration = time.time() - start_time
@@ -51,7 +60,7 @@ class GreatIngestor:
 
 if __name__ == "__main__":
     # Mocking the network for the Great Ingestion Demo
-    import io, zipfile, urllib.request
+    import io, zipfile, urllib.request, os, tempfile, kaggle
 
     def create_mock_zip(name):
         buf = io.BytesIO()
@@ -73,6 +82,18 @@ if __name__ == "__main__":
         return MockRes(name)
 
     urllib.request.urlopen = mock_urlopen
+
+    class MockKaggleApiGreat:
+        def dataset_download_files(self, slug, path, unzip=False):
+            print(f"      [MOCK] Downloading dataset {slug} to {path}")
+            with open(os.path.join(path, "mock_data.zip"), "wb") as f:
+                f.write(create_mock_zip(slug.replace("/", "_")))
+        def competition_download_files(self, name, path):
+            print(f"      [MOCK] Downloading competition {name} to {path}")
+            with open(os.path.join(path, "mock_comp.zip"), "wb") as f:
+                f.write(create_mock_zip(name))
+
+    kaggle.api = MockKaggleApiGreat()
 
     ingestor = GreatIngestor()
     ingestor.execute_global_consumption()
