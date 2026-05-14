@@ -4,7 +4,6 @@ import io
 import urllib.request
 import os
 import tempfile
-import kaggle
 import hashlib
 from fso_content_shatterer import ContentShatterer
 
@@ -46,6 +45,7 @@ class TGI_Universal_Ingestor:
         try:
             start_time = time.time()
             with tempfile.TemporaryDirectory() as tmpdir:
+                import kaggle
                 kaggle.api.dataset_download_files(dataset_slug, path=tmpdir, unzip=False)
                 zip_files = [f for f in os.listdir(tmpdir) if f.endswith('.zip')]
                 if zip_files:
@@ -66,6 +66,7 @@ class TGI_Universal_Ingestor:
         try:
             start_time = time.time()
             with tempfile.TemporaryDirectory() as tmpdir:
+                import kaggle
                 kaggle.api.competition_download_files(competition_name, path=tmpdir)
                 zip_files = [f for f in os.listdir(tmpdir) if f.endswith('.zip')]
                 if zip_files:
