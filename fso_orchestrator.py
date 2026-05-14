@@ -24,6 +24,28 @@ class SovereignOrchestrator:
         self.vault = ParityVault(m, k)
         print(f"[{time.strftime('%H:%M:%S')} ALGIERS] Sovereign Orchestrator Online. Full TGI Suite Initialized.")
 
+    def execute_kaggle_mission(self, slug, mission_type='dataset', mission_name="Kaggle Intelligence Gathering"):
+        """
+        Executes a mission to ingest and process Kaggle data.
+        """
+        print(f"\n[MISSION START]: {mission_name}")
+        print("-" * 60)
+
+        if mission_type == 'dataset':
+            self.tgi.ingestor.ingest_kaggle_dataset(slug)
+        elif mission_type == 'competition':
+            self.tgi.ingestor.ingest_kaggle_competition(slug)
+        else:
+            print(f"  [-] MISSION ABORT: Invalid Kaggle mission type: {mission_type}")
+            return
+
+        print("\n[*] Verifying Manifold Compliance...")
+        self.codex.verify_manifold_compliance(self.m, self.k)
+        print("\n[*] Rendering Topological Footprint...")
+        self.visualizer.render_manifold(self.tgi.ingestor.topological_manifold)
+        print(f"\n[MISSION COMPLETE]: {mission_name}")
+        print("-" * 60)
+
     def execute_security_vision_mission(self, url, secret_name="Root"):
         print(f"\n[MISSION START]: Vision & Security Synthesis")
         print("-" * 60)
